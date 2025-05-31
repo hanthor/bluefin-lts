@@ -23,7 +23,7 @@ dnf -y install \
 	jetbrains-mono-fonts-all \
 	buildah \
 	btrfs-progs \
-  xhost
+	xhost
 
 # Everything that depends on external repositories should be after this.
 # Make sure to set them as disabled and enable them only when you are going to use their packages.
@@ -78,6 +78,10 @@ dnf -y copr enable trixieua/morewaita-icon-theme
 dnf -y copr disable trixieua/morewaita-icon-theme
 dnf -y --enablerepo "copr:copr.fedorainfracloud.org:trixieua:morewaita-icon-theme" install \
 	morewaita-icon-theme
+
+# GNOME 48
+dnf -y copr enable @centoshyperscale/c10s-gnome-48
+dnf -y update
 
 # This is required so homebrew works indefinitely.
 # Symlinking it makes it so whenever another GCC version gets released it will break if the user has updated it without-
