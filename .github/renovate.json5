@@ -5,7 +5,15 @@
   ],
 
   "rebaseWhen": "never",
-
+  "baseBranches": [ 
+    "main",
+    "albacore",
+    "albacore-server",
+    "bluefin",
+    "yellowfin",
+    "redfin",
+    "bluefin-tuna"
+  ],
   "packageRules": [
     {
       "automerge": true,
@@ -24,6 +32,7 @@
         "quay.io/centos-bootc/centos-bootc",
         "ghcr.io/hanthor/almalinux-bootc",
         "quay.io/fedora/fedora-bootc",
+        "quay.io/almalinux/almalinux-bootc",
       ],
     }
   ]
