@@ -186,7 +186,8 @@ recipes cannot use `%meson_test` without overriding its default directory.
 
 Check every GTK subpackage file list against the new release's installed tools,
 including removed icon-editor and Shaper entries. Package new Mutter schemas
-in its common subpackage. When Glycin replaces GdkPixbuf’s loader subpackage,
+in its common subpackage. Include and validate Shell's CalendarServer desktop
+entry alongside its D-Bus service. When Glycin replaces GdkPixbuf’s loader subpackage,
 provide its versioned ISA capability for CentOS GTK 3 consumers. Exclude
 Localsearch’s bundled private extract ZIP library from generated requirements
 while retaining its files and runtime search path.

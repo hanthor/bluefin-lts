@@ -203,6 +203,7 @@ mkdir -p %{buildroot}%{_datadir}/gnome-shell/search-providers
 %find_lang %{name}
 
 %check
+desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.Shell.CalendarServer.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.Shell.Extensions.desktop
 
 %if %{portal_helper}
@@ -217,6 +218,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.Shell.Porta
 %{_bindir}/gnome-shell-extension-tool
 %{_bindir}/gnome-shell-test-tool
 %{_datadir}/glib-2.0/schemas/00_org.gnome.shell.gschema.override
+%{_datadir}/applications/org.gnome.Shell.CalendarServer.desktop
 %{_datadir}/applications/org.gnome.Shell.Extensions.desktop
 %{_datadir}/bash-completion/completions/gnome-extensions
 %{_datadir}/gnome-control-center/keybindings/50-gnome-shell-launchers.xml
