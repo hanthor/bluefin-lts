@@ -248,3 +248,10 @@ Include the locked SELinux policy recipe in the verified stack: the compatibilit
 RPM requires policy 43.1 or later, which the CentOS 42.1 baseline cannot supply.
 The final installation gate must satisfy runtime prerequisites as well as build
 requirements.
+SELinux package installation must pass both `semodule -p` for the policy root
+and `-S /var/lib/selinux` for the module-store path (relative to that root).
+CentOS defaults otherwise place module stores under `/etc/selinux` rather than
+the packaged `/var/lib/selinux`.
+The policy RPMs replace CentOS’s older `selinux-policy-extra` and corresponding
+`targeted-extra`/`mls-extra` RPMs because the new policy packages include those
+modules. Retaining an extra RPM would require its exact older policy version.

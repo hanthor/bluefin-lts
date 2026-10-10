@@ -67,6 +67,9 @@ Requires(meta): (rpm-plugin-selinux if rpm-libs)
 Requires: (flatpak-selinux >= 1.17.3 if flatpak-selinux)
 Requires: (container-selinux >= 2.246.0 if container-selinux)
 Requires: selinux-policy-any = %{version}-%{release}
+# CentOS splits these modules into exact-version extra RPMs; this recipe
+# includes them in the corresponding policy packages.
+Obsoletes: selinux-policy-extra < %{version}-%{release}
 Provides: selinux-policy-base = %{version}-%{release}
 Provides: selinux-policy-stable = %{STABLEVER}
 Suggests: selinux-policy-targeted
@@ -185,7 +188,7 @@ install -p -m0644 ./dist/%1/modules.conf ./policy/modules.conf \
 %make_build %common_params UNK_PERMS=%3 NAME=%1 TYPE=%2 validate modules \
 make %common_params UNK_PERMS=%3 NAME=%1 TYPE=%2 DESTDIR=%{buildroot} install \
 make %common_params UNK_PERMS=%3 NAME=%1 TYPE=%2 DESTDIR=%{buildroot} install-appconfig \
-make %common_params UNK_PERMS=%3 NAME=%1 TYPE=%2 DESTDIR=%{buildroot} SEMODULE="semodule -p %{buildroot} -X 100 " load \
+make %common_params UNK_PERMS=%3 NAME=%1 TYPE=%2 DESTDIR=%{buildroot} SEMODULE="semodule -p %{buildroot} -S %{_sharedstatedir}/selinux -X 100 " load \
 %{__mkdir} -p %{buildroot}%{_sysconfdir}/selinux/%1/logins \
 touch %{buildroot}%{_sysconfdir}/selinux/%1/contexts/files/file_contexts.subs \
 install -p -m0644 ./config/file_contexts.subs_dist %{buildroot}%{_sysconfdir}/selinux/%1/contexts/files \
@@ -447,7 +450,7 @@ make clean
 %makeModulesConf targeted
 %installCmds targeted mcs allow
 # install permissivedomains.cil
-semodule -p %{buildroot} -X 100 -s targeted -i \
+semodule -p %{buildroot} -S %{_sharedstatedir}/selinux -X 100 -s targeted -i \
     ./dist/permissivedomains.cil
 # recreate sandbox.pp
 rm -rf %{buildroot}%{_sharedstatedir}/selinux/targeted/active/modules/100/sandbox
@@ -566,6 +569,7 @@ exit 0
 Summary: SELinux targeted policy
 Provides: selinux-policy-any = %{version}-%{release}
 Obsoletes: selinux-policy-targeted-sources < 2
+Obsoletes: selinux-policy-targeted-extra < %{version}-%{release}
 Requires(pre): policycoreutils >= %{POLICYCOREUTILSVER}
 Requires(pre): coreutils
 Requires(pre): selinux-policy = %{version}-%{release}
@@ -756,6 +760,7 @@ exit 0
 Summary: SELinux MLS policy
 Provides: selinux-policy-any = %{version}-%{release}
 Obsoletes: selinux-policy-mls-sources < 2
+Obsoletes: selinux-policy-mls-extra < %{version}-%{release}
 Requires: policycoreutils-newrole >= %{POLICYCOREUTILSVER} setransd
 Requires(pre): policycoreutils >= %{POLICYCOREUTILSVER}
 Requires(pre): coreutils

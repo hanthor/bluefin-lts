@@ -140,8 +140,11 @@ Run `just factory-check` before every commit that touches `factory/**` or
   stack workflow must also install the resolved RPMs without network repos,
   assert the installed core versions are 51, and run `gnome-shell --version`.
   Include SELinux policy in the stack targets to satisfy the compatibility
-  RPM’s policy floor. A source version or dependency solve alone does not verify
-  the installed stack.
+  RPM’s policy floor. Pass both `semodule -p` and `-S` during policy installation
+  so CentOS writes module stores at the packaged `/var/lib/selinux` path.
+  Replace CentOS’s exact-version extra policy RPMs only when their modules
+  are included in the new policy packages.
+  A source version or dependency solve alone does not verify the installed stack.
 - Sign metadata before copying it into the image, and sign the immutable OCI
   digest before moving a stream tag. Seed extraction uses `/factory`.
 - Verify `Factory CentOS smoke` in CI before trusting local fast gates.
@@ -161,7 +164,7 @@ stages cannot substitute for a successful dependency transaction.
 ## Full-stack verification
 
 Run `factory-stack.yml` on the candidate branch to build the GNOME 51 targets and unmet prerequisites
-without a fixed wave-depth limit. Inspect `factory-stack-evidence` for every
+with computed waves. Inspect `factory-stack-evidence` for every
 package status and bootstrap witness; a partial RPM artifact is not a successful
 stack. Generated cargo bundles come from the upstream Cargo.lock, verify each
 crate, and carry their own SHA-512 lock. An explicit relative `lockfile` may
