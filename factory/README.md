@@ -250,8 +250,9 @@ The final installation gate must satisfy runtime prerequisites as well as build
 requirements.
 SELinux package installation must pass both `semodule -p` for the policy root
 and `-S /var/lib/selinux` for the module-store path (relative to that root).
-CentOS defaults otherwise place module stores under `/etc/selinux` rather than
-the packaged `/var/lib/selinux`.
+The pinned CentOS bootc image configures its store under `/etc/selinux`, so
+leaving `-S` implicit writes outside the packaged `/var/lib/selinux` path.
+This build-time override preserves the image’s runtime store configuration.
 The policy RPMs replace CentOS’s older `selinux-policy-extra` and corresponding
 `targeted-extra`/`mls-extra` RPMs because the new policy packages include those
 modules. Retaining an extra RPM would require its exact older policy version.

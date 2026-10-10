@@ -141,7 +141,8 @@ Run `just factory-check` before every commit that touches `factory/**` or
   assert the installed core versions are 51, and run `gnome-shell --version`.
   Include SELinux policy in the stack targets to satisfy the compatibility
   RPM’s policy floor. Pass both `semodule -p` and `-S` during policy installation
-  so CentOS writes module stores at the packaged `/var/lib/selinux` path.
+  so the pinned bootc root writes module stores at the packaged
+  `/var/lib/selinux` path without changing its runtime store configuration.
   Replace CentOS’s exact-version extra policy RPMs only when their modules
   are included in the new policy packages.
   A source version or dependency solve alone does not verify the installed stack.
