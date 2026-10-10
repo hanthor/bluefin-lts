@@ -29,6 +29,9 @@ BuildRequires:  meson
 BuildRequires:  pkgconfig(accountsservice) >= 26.12.8
 BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(gdm)
+# gdm-devel pulls in the session and Shell. The CentOS Shell pulls in an
+# older Control Center linked to AccountsService ABI 0; this build uses ABI 1.
+BuildRequires:  gnome-shell >= 51.0
 BuildRequires:  pkgconfig(geocode-glib-2.0)
 BuildRequires:  pkgconfig(gio-2.0) >= %{glib_required_version}
 BuildRequires:  pkgconfig(gio-unix-2.0) >= %{glib_required_version}

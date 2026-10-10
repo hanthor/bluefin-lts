@@ -90,13 +90,38 @@ class FactoryRepairs(unittest.TestCase):
         pin = 'quay.io/centos-bootc/centos-bootc:c10s@sha256:' + 'a' * 64
         from subprocess import CompletedProcess
         with patch('tools.buildroot.subprocess.run', side_effect=[
-                CompletedProcess([], 0, '', ''), CompletedProcess([], 0, pin, '')]) as run:
+                CompletedProcess([], 0, '', ''), CompletedProcess([], 0, json.dumps([pin]), '')]) as run:
             self.assertTrue(resolve(pin)['matches'])
             self.assertEqual(run.call_args_list[0].args[0], ['docker', 'pull', pin])
         with patch('tools.buildroot.subprocess.run', side_effect=[
-                CompletedProcess([], 0, '', ''), CompletedProcess([], 0, 'wrong@sha256:' + 'b' * 64, '')]):
+                CompletedProcess([], 0, '', ''), CompletedProcess([], 0, json.dumps(['wrong@sha256:' + 'b' * 64]), '')]):
             with self.assertRaises(SystemExit):
                 resolve(pin)
+
+    def test_buildroot_accepts_pinned_index_after_architecture_digest(self):
+        from subprocess import CompletedProcess
+        pin = 'quay.io/centos-bootc/centos-bootc:c10s@sha256:' + 'a' * 64
+        digests = ['quay.io/centos-bootc/centos-bootc@sha256:' + 'b' * 64,
+                   pin.replace(':c10s@', '@')]
+        with patch('tools.buildroot.subprocess.run', side_effect=[
+                CompletedProcess([], 0, '', ''), CompletedProcess([], 0, json.dumps(digests), '')]):
+            result = resolve(pin, engine='podman')
+            self.assertTrue(result['matches'])
+            self.assertEqual(result['actual'], 'sha256:' + 'a' * 64)
+
+    def test_buildroot_rejects_failed_pull_or_invalid_inspection(self):
+        from subprocess import CompletedProcess
+        pin = 'quay.io/centos-bootc/centos-bootc:c10s@sha256:' + 'a' * 64
+        for pull_status, inspect_status, output in [
+                (1, 0, json.dumps([pin])), (0, 1, json.dumps([pin])),
+                (0, 0, 'malformed'), (0, 0, json.dumps(pin)),
+                (0, 0, json.dumps([None]))]:
+            with self.subTest(pull=pull_status, inspect=inspect_status, output=output):
+                with patch('tools.buildroot.subprocess.run', side_effect=[
+                        CompletedProcess([], pull_status, '', ''),
+                        CompletedProcess([], inspect_status, output, '')]):
+                    with self.assertRaises(SystemExit):
+                        resolve(pin)
 
     def test_report_recognizes_real_multidigit_wave_names(self):
         self.assertTrue(did_build({'factory-rpm-s12-gnome-shell'}, 'gnome-shell'))

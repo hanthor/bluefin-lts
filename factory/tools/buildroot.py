@@ -84,12 +84,21 @@ def resolve(pin: str, engine: str = "docker") -> dict:
     print(f"pulling immutable build root: {pin}", flush=True)
     pull = subprocess.run([engine, "pull", pin], text=True, check=False)
     resolved = subprocess.run(
-        [engine, "image", "inspect", pin, "--format", "{{index .RepoDigests 0}}"],
+        [engine, "image", "inspect", pin, "--format", "{{json .RepoDigests}}"],
         capture_output=True,
         text=True,
         check=False,
     )
-    actual = resolved.stdout.strip().rpartition("@")[2] if resolved.returncode == 0 else ""
+    # Podman can record both the architecture manifest and the multiarch index,
+    # in either order. Verify the pin against all immutable repository digests.
+    try:
+        digests = json.loads(resolved.stdout) if resolved.returncode == 0 else []
+        if not isinstance(digests, list) or not all(isinstance(item, str) for item in digests):
+            digests = []
+    except (ValueError, TypeError):
+        digests = []
+    observed = [item.rpartition("@")[2] for item in digests]
+    actual = expected if expected in observed else next(iter(observed), "")
 
     result = {
         "expected": expected,

@@ -114,6 +114,9 @@ Run `just factory-check` before every commit that touches `factory/**` or
 ## Build and publication verification
 
 - Reuse the rows extracted in CentOS; the host planner must not rerun RPM.
+  Check the exact buildroot pin against all inspected RepoDigests: Podman can
+  list an architecture manifest before the pinned multiarch index. A successful
+  pull and an exact digest match are both required.
   Map capabilities through binary subpackage names, explicit Provides, and
   CentOS repository metadata; `pkgconfig(glib-2.0)` is one capability. Add
   explicit versioned Provides to devel subpackages for capabilities absent
@@ -191,6 +194,12 @@ entry alongside its D-Bus service. When Glycin replaces GdkPixbuf’s loader sub
 provide its versioned ISA capability for CentOS GTK 3 consumers. Exclude
 Localsearch’s bundled private extract ZIP library from generated requirements
 while retaining its files and runtime search path.
+
+BuildRequires must also expose runtime prerequisites pulled in by development
+packages when an ABI upgrade prevents using the CentOS baseline. Initial Setup's
+GDM development package pulls in Session and Shell; require Shell 51 explicitly
+so the plan builds it first and avoids CentOS Control Center's AccountsService
+ABI 0 dependency while the factory supplies ABI 1.
 
 Recipe-scoped syscall profiles retain Moby default restrictions and kernel
 capability checks. Glycin permits nested Bubblewrap namespace setup without
