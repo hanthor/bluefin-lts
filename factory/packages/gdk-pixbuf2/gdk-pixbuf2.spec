@@ -29,6 +29,9 @@ Requires: shared-mime-info
 
 # All modules previously provided by gdk-pixbuf itself are obsoleted by Glycin.
 Obsoletes: %{name}-modules < %{version}-%{release}
+# CentOS GTK 3 still requires the former loader subpackage capability.
+Provides: %{name}-modules = %{version}-%{release}
+Provides: %{name}-modules%{?_isa} = %{version}-%{release}
 
 # Most third-party pixbuf loaders are also obsolete. If Glycin supports the
 # format, then it will take precedence and the third-party loader won't be used.
